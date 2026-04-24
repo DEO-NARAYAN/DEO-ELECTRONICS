@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description"
+    content="Deo Electronics – Affordable, high-quality electronic components. Shop Microcontrollers, LEDs, Resistors, Sensors and more at wholesale prices." />
+  <title>Deo Electronics – Build the Future</title>
+
+  <!-- Google Fonts: Syne (display) + DM Sans (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap"
+    rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+
+  <!-- ═══ CANVAS BACKGROUND ═══ -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- ═══ CURSOR DOT ═══ -->
+  <div id="cursor-dot"></div>
+  <div id="cursor-ring"></div>
+
+  <!-- ═══ TOAST CONTAINER ═══ -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <!-- ═══ AUTH MODAL ═══ -->
+  <div id="auth-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box">
+      <button id="close-modal-btn" class="modal-close-btn" aria-label="Close">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M14 4L4 14M4 4l10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+      <div class="modal-header">
+        <div class="modal-icon-wrap">
+          <svg width="32" height="32" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="22" width="32" height="22" rx="5" fill="none" stroke="currentColor" stroke-width="2" />
+            <path d="M14 22V16a10 10 0 0 1 20 0v6" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            <circle cx="24" cy="33" r="3" fill="currentColor" />
+            <line x1="24" y1="36" x2="24" y2="40" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </div>
+        <h2 id="modal-title" class="modal-title">Welcome Back</h2>
+        <p class="modal-subtitle">Sign in to your Deo Electronics account</p>
+      </div>
+      <form id="auth-form" novalidate>
+        <div class="form-group">
+          <label for="auth-email" class="form-label">Email Address</label>
+          <input type="email" id="auth-email" class="form-input" placeholder="you@example.com" required
+            autocomplete="email" />
+        </div>
+        <div class="form-group">
+          <label for="auth-password" class="form-label">Password</label>
+          <input type="password" id="auth-password" class="form-input" placeholder="Enter your password" required
+            autocomplete="current-password" />
+        </div>
+        <button type="submit" id="auth-submit-btn" class="btn-primary w-full mt-4">Sign In</button>
+      </form>
+      <p class="modal-footer-text">New here? <a href="#" class="text-link">Create account</a></p>
+    </div>
+  </div>
+
+  <!-- ═══ CART SIDEBAR ═══ -->
+  <div id="cart-overlay" class="cart-overlay hidden"></div>
+  <aside id="cart-sidebar" class="cart-sidebar" aria-label="Shopping Cart">
+    <div class="cart-header">
+      <h2 class="cart-title">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+          <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z" stroke="currentColor" stroke-width="1.8"
+            stroke-linecap="round" stroke-linejoin="round" />
+          <line x1="3" y1="6" x2="21" y2="6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          <path d="M16 10a4 4 0 01-8 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        Your Cart
+      </h2>
+      <button id="close-cart-btn" class="icon-btn" aria-label="Close cart">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <path d="M14 4L4 14M4 4l10 10" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+    <div id="cart-items-container" class="cart-items-list">
+      <div id="cart-empty-msg" class="cart-empty">
+        <div class="cart-empty-icon">
+          <svg width="48" height="48" viewBox="0 0 64 64" fill="none">
+            <path d="M16 8L8 16v40a4 4 0 004 4h40a4 4 0 004-4V16l-8-8H16z" stroke="currentColor" stroke-width="2" />
+            <line x1="8" y1="16" x2="56" y2="16" stroke="currentColor" stroke-width="2" />
+            <path d="M40 24a8 8 0 01-16 0" stroke="currentColor" stroke-width="2" />
+          </svg>
+        </div>
+        <p class="cart-empty-title">Your cart is empty</p>
+        <p class="cart-empty-sub">Add some electronics to get started!</p>
+      </div>
+    </div>
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span class="cart-total-label">Total</span>
+        <span id="cart-total" class="cart-total-price">₹0.00</span>
+      </div>
+      <button id="checkout-btn" class="btn-primary w-full mt-3">Checkout →</button>
+    </div>
+  </aside>
+
+  <!-- ═══ NAVIGATION ═══ -->
+  <header id="navbar" class="navbar">
+    <div class="nav-container">
+      <a href="#" class="nav-logo" aria-label="Deo Electronics Home">
+        <div class="logo-mark">
+          <svg width="28" height="28" viewBox="0 0 36 36" fill="none">
+            <rect x="10" y="10" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <rect x="13" y="13" width="10" height="10" rx="1" fill="currentColor" fill-opacity="0.2"
+              stroke="currentColor" stroke-width="1.2" />
+            <line x1="13" y1="6" x2="13" y2="10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <line x1="18" y1="6" x2="18" y2="10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <line x1="23" y1="6" x2="23" y2="10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <line x1="13" y1="26" x2="13" y2="30" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <line x1="18" y1="26" x2="18" y2="30" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <line x1="23" y1="26" x2="23" y2="30" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <line x1="6" y1="13" x2="10" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <line x1="6" y1="18" x2="10" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <line x1="6" y1="23" x2="10" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <line x1="26" y1="13" x2="30" y2="13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <line x1="26" y1="18" x2="30" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+            <line x1="26" y1="23" x2="30" y2="23" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+        </div>
+        <span class="logo-text">DEO <span class="logo-accent">ELECTRONICS</span></span>
+      </a>
+
+      <div class="search-container">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 18 18" fill="none">
+          <circle cx="8" cy="8" r="5.5" stroke="currentColor" stroke-width="1.6" />
+          <line x1="12.5" y1="12.5" x2="16" y2="16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+        <input type="search" id="search-input" class="search-input" placeholder="Search components..."
+          aria-label="Search products" autocomplete="off" />
+      </div>
+
+      <div class="nav-actions">
+        <button id="signin-btn" class="nav-btn" aria-label="Sign In">
+          <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
+            <circle cx="10" cy="7" r="4" stroke="currentColor" stroke-width="1.6" />
+            <path d="M2 18c0-4 3.582-7 8-7s8 3 8 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          </svg>
+          <span class="nav-btn-label">Sign In</span>
+        </button>
+        <div class="cart-btn-wrapper">
+          <button id="cart-btn" class="nav-btn nav-btn-cart" aria-label="Open Cart">
+            <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
+              <path d="M5 3L3 5.5v13a2 2 0 002 2h12a2 2 0 002-2v-13L17 3H5z" stroke="currentColor" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+              <line x1="3" y1="5.5" x2="19" y2="5.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+              <path d="M14.5 8.5a3.5 3.5 0 01-7 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"
+                stroke-linejoin="round" />
+            </svg>
+          </button>
+          <span id="cart-count" class="cart-badge hidden">0</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ HERO SECTION ═══ -->
+  <section id="hero" class="hero-section">
+    <div class="hero-bg-orbs" aria-hidden="true">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+    <div class="hero-content" data-reveal>
+      <div class="hero-tag">
+        <span class="hero-tag-dot"></span>
+        Wholesale Pricing Available
+      </div>
+      <h1 class="hero-headline">
+        Build the Future<br />
+        <span class="gradient-text">With Wholesale Prices</span>
+      </h1>
+      <p class="hero-description">
+        Premium electronic components at unbeatable prices. Microcontrollers, sensors, LEDs, resistors — everything you
+        need to engineer tomorrow, today.
+      </p>
+      <div class="hero-cta-group">
+        <a href="#products" class="btn-primary">
+          Shop Now
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </a>
+        <a href="#products" class="btn-outline">Explore Components</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <span class="stat-number">500+</span>
+          <span class="stat-label">Products</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <span class="stat-number">10K+</span>
+          <span class="stat-label">Happy Makers</span>
+        </div>
+        <div class="stat-divider"></div>
+        <div class="hero-stat">
+          <span class="stat-number">24hr</span>
+          <span class="stat-label">Dispatch</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-decoration" aria-hidden="true">
+      <div class="hero-3d-card">
+        <div class="hero-3d-inner">
+          <svg width="340" height="340" viewBox="0 0 400 400" fill="none" class="hero-circuit-svg">
+            <defs>
+              <linearGradient id="grad1" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#6366f1" />
+                <stop offset="100%" stop-color="#06b6d4" />
+              </linearGradient>
+              <linearGradient id="grad2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#ec4899" />
+                <stop offset="100%" stop-color="#8b5cf6" />
+              </linearGradient>
+              <linearGradient id="gradFill" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0%" stop-color="#6366f1" stop-opacity="0.08" />
+                <stop offset="100%" stop-color="#ec4899" stop-opacity="0.08" />
+              </linearGradient>
+            </defs>
+            <circle cx="200" cy="200" r="170" stroke="url(#grad1)" stroke-width="1" stroke-dasharray="12 6"
+              opacity="0.4" />
+            <circle cx="200" cy="200" r="130" stroke="url(#grad2)" stroke-width="0.8" stroke-dasharray="6 9"
+              opacity="0.3" />
+            <rect x="158" y="158" width="84" height="84" rx="10" fill="none" stroke="url(#grad1)" stroke-width="2" />
+            <rect x="169" y="169" width="62" height="62" rx="6" fill="url(#gradFill)" stroke="url(#grad2)"
+              stroke-width="1.2" />
+            <line x1="200" y1="158" x2="200" y2="95" stroke="url(#grad1)" stroke-width="1.2" opacity="0.7" />
+            <line x1="200" y1="242" x2="200" y2="305" stroke="url(#grad1)" stroke-width="1.2" opacity="0.7" />
+            <line x1="158" y1="200" x2="95" y2="200" stroke="url(#grad1)" stroke-width="1.2" opacity="0.7" />
+            <line x1="242" y1="200" x2="305" y2="200" stroke="url(#grad1)" stroke-width="1.2" opacity="0.7" />
+            <line x1="170" y1="170" x2="118" y2="118" stroke="url(#grad2)" stroke-width="0.9" opacity="0.5" />
+            <line x1="230" y1="170" x2="282" y2="118" stroke="url(#grad2)" stroke-width="0.9" opacity="0.5" />
+            <line x1="170" y1="230" x2="118" y2="282" stroke="url(#grad2)" stroke-width="0.9" opacity="0.5" />
+            <line x1="230" y1="230" x2="282" y2="282" stroke="url(#grad2)" stroke-width="0.9" opacity="0.5" />
+            <circle cx="200" cy="95" r="5" fill="url(#grad1)" />
+            <circle cx="200" cy="305" r="5" fill="url(#grad1)" />
+            <circle cx="95" cy="200" r="5" fill="url(#grad1)" />
+            <circle cx="305" cy="200" r="5" fill="url(#grad1)" />
+            <circle cx="118" cy="118" r="4" fill="url(#grad2)" />
+            <circle cx="282" cy="118" r="4" fill="url(#grad2)" />
+            <circle cx="118" cy="282" r="4" fill="url(#grad2)" />
+            <circle cx="282" cy="282" r="4" fill="url(#grad2)" />
+            <text x="200" y="196" text-anchor="middle" fill="#6366f1" font-size="10" font-family="Syne,sans-serif"
+              letter-spacing="2" font-weight="700">DEO</text>
+            <text x="200" y="212" text-anchor="middle" fill="#ec4899" font-size="7" font-family="Syne,sans-serif"
+              letter-spacing="2.5">ELECTRONICS</text>
+          </svg>
+        </div>
+        <div class="hero-card-shadow"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PRODUCTS SECTION ═══ -->
+  <section id="products" class="products-section">
+    <div class="section-header" data-reveal>
+      <div class="section-eyebrow">Our Catalog</div>
+      <h2 class="section-title">Our <span class="gradient-text">Components</span></h2>
+      <p class="section-subtitle">Hand-picked, tested, and ready to power your next project</p>
+    </div>
+
+    <div class="category-filters" role="group" aria-label="Filter by category" data-reveal>
+      <button class="filter-btn active" data-category="all">All</button>
+      <button class="filter-btn" data-category="Microcontrollers">Microcontrollers</button>
+      <button class="filter-btn" data-category="LEDs">LEDs</button>
+      <button class="filter-btn" data-category="Resistors">Resistors</button>
+      <button class="filter-btn" data-category="Sensors">Sensors</button>
+    </div>
+
+    <p id="no-results-msg" class="no-results hidden">No products found matching your search.</p>
+    <div id="product-grid" class="product-grid"></div>
+  </section>
+
+  <!-- ═══ FEATURES SECTION ═══ -->
+  <section class="features-section">
+    <div class="features-grid">
+      <div class="feature-card" data-reveal>
+        <div class="feature-icon-wrap">
+          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+            <rect x="2" y="12" width="24" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <path d="M26 18h6l4 8v4h-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"
+              stroke-linejoin="round" />
+            <circle cx="10" cy="32" r="3" stroke="currentColor" stroke-width="1.8" />
+            <circle cx="30" cy="32" r="3" stroke="currentColor" stroke-width="1.8" />
+            <line x1="2" y1="20" x2="26" y2="20" stroke="currentColor" stroke-width="1.2" opacity="0.5" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="feature-title">Fast Dispatch</h3>
+          <p class="feature-desc">Orders shipped within 24 hours across India</p>
+        </div>
+      </div>
+      <div class="feature-card" data-reveal>
+        <div class="feature-icon-wrap">
+          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+            <path d="M20 4l14 6v10c0 8-6 14-14 16C12 34 6 28 6 20V10l14-6z" fill="none" stroke="currentColor"
+              stroke-width="1.8" />
+            <path d="M13 20l5 5 9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="feature-title">Quality Assured</h3>
+          <p class="feature-desc">Every component tested before dispatch</p>
+        </div>
+      </div>
+      <div class="feature-card" data-reveal>
+        <div class="feature-icon-wrap">
+          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+            <circle cx="20" cy="20" r="16" stroke="currentColor" stroke-width="1.8" /><text x="20" y="26"
+              text-anchor="middle" fill="currentColor" font-size="16" font-family="DM Sans" font-weight="bold">₹</text>
+          </svg>
+        </div>
+        <div>
+          <h3 class="feature-title">Wholesale Prices</h3>
+          <p class="feature-desc">Best deals for bulk and individual orders</p>
+        </div>
+      </div>
+      <div class="feature-card" data-reveal>
+        <div class="feature-icon-wrap">
+          <svg width="28" height="28" viewBox="0 0 40 40" fill="none">
+            <path d="M8 20c0-6.627 5.373-12 12-12s12 5.373 12 12" stroke="currentColor" stroke-width="1.8"
+              stroke-linecap="round" />
+            <rect x="5" y="20" width="6" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <rect x="29" y="20" width="6" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8" />
+            <path d="M35 30v2a4 4 0 01-4 4H22" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />
+          </svg>
+        </div>
+        <div>
+          <h3 class="feature-title">Expert Support</h3>
+          <p class="feature-desc">Technical help from engineers, for engineers</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <svg width="24" height="24" viewBox="0 0 36 36" fill="none">
+          <rect x="10" y="10" width="16" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.6" />
+          <rect x="13" y="13" width="10" height="10" rx="1" fill="currentColor" fill-opacity="0.3" stroke="currentColor"
+            stroke-width="1" />
+          <line x1="13" y1="6" x2="13" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <line x1="18" y1="6" x2="18" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <line x1="23" y1="6" x2="23" y2="10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <line x1="13" y1="26" x2="13" y2="30" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <line x1="18" y1="26" x2="18" y2="30" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <line x1="23" y1="26" x2="23" y2="30" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <line x1="6" y1="13" x2="10" y2="13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <line x1="6" y1="18" x2="10" y2="18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <line x1="6" y1="23" x2="10" y2="23" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <line x1="26" y1="13" x2="30" y2="13" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <line x1="26" y1="18" x2="30" y2="18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+          <line x1="26" y1="23" x2="30" y2="23" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        </svg>
+        <span class="footer-brand-name">DEO ELECTRONICS</span>
+      </div>
+      <p class="footer-copy">© 2026 Deo Electronics. All rights reserved. Engineered for makers.</p>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.161.0/build/three.min.js"></script>
+  <script src="three-bg.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
